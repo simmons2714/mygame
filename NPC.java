@@ -1,10 +1,11 @@
 import java.util.Random;
 
 public class NPC {
+//add melon as an npc
 
     private int hp;
     private final double dex;
-    private final String name;
+    private String name;
     private final int atk;
     private final String flavorText;
 
@@ -16,9 +17,11 @@ public class NPC {
         this.flavorText = flavorText;
     }
 
+
     public int getHp() {
         return hp;
     }
+
 
     public double getDex() {
         return dex;
@@ -36,16 +39,16 @@ public class NPC {
         return flavorText;
     }
 
-    public void setHp(int hp){
+    public synchronized void setHp(int hp){
         this.hp = hp;
     }
 
+    public void setName(String name){
+        this.name = name;
+    }
+
     public boolean isDead(){
-        if (this.getHp() <= 0){
-            return false;
-        } else {
-            return true;
-        }
+        return this.hp <= 0;
     }
 
     public String toString() {
@@ -55,11 +58,10 @@ public class NPC {
         return(" the remaining hp for the " + getName() + " is " + getHp());
     }
 
-    public String inCombat (NPC other){
+    /*public String inCombat (NPC other){
         Random hitChance = new Random();
         double doesHitA = hitChance.nextDouble() + this.getDex();
         double doesHitB = hitChance.nextDouble() + other.getDex();
-
 
             if (doesHitA > doesHitB) {
                 other.setHp(other.getHp() - this.getAtk());
@@ -69,8 +71,24 @@ public class NPC {
                 this.setHp(this.getHp() - other.getAtk());
                 return (other.getName() + " hit " + this.getName() + this.curHP());
             }
-        }
+        }*/
 
+    public void attacks(NPC other){
+        other.setHp(other.getHp() - this.getAtk());
+    }
+
+
+    public boolean hitChance(NPC other){
+        Random diceRoll = new Random();
+        double doesHitA = diceRoll.nextDouble() + this.getDex();
+        double doesHitB = diceRoll.nextDouble() + other.getDex();
+
+        return doesHitA > doesHitB;
+    }
+
+    public static boolean eitherNPCisDead(NPC object, NPC other){
+        return !((object.getHp()) <= 0) ^ other.getHp() <= 0;
+    }
 
 
 }
