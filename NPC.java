@@ -90,5 +90,35 @@ public class NPC {
         return !((object.getHp()) <= 0) ^ other.getHp() <= 0;
     }
 
+    public void blocks(Player other){
+        if(this.getAtk() - other.getrHandBlk() >=  1) {
+            other.setHp(other.getHp() - (this.getAtk() - other.getrHandBlk()));
+        }else{
+            other.setHp(other.getHp());
+        }
+    }
 
+    public String toDMG(NPC other) {
+        return (this.getName() + " hit " + other.getName() + other.curHP());
+    }
+
+    public static class Goblin extends NPC {
+        public Goblin(){
+            super(20, 0.05, 3, "goblin", "a small creature and its green");
+        }
+
+    }
+
+    public static class Imp extends NPC {
+        public Imp(){
+            super(25, 0.07, 6, "imp", "a small creature and its red");
+        }
+
+    }
+
+    public static class Melon extends NPC {
+        public Melon(){
+            super(40, 0.02, 13, "melon", "its a melon the fuck do you want me to put here");
+        }
+    }
 }
