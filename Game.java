@@ -1,109 +1,133 @@
-public class Game{
 
-    Goblin testGoblin = new Goblin();
-    Imp testImp = new Imp();
-    Melon testMelon = new Melon();
-    Axe testAxe = new Axe();
-    Player testPlayer = new Player();
-    HealthPotion testPotion = new HealthPotion();
+import java.util.*;
+
+public class Game {
+    // Player testPlayer = new Player();
+
     public static void main(String[] args) {
 
-        Goblin testGoblin = new Goblin();
-        Imp testImp = new Imp();
-        Melon testMelon = new Melon();
+        NPC.Goblin testGoblin = new NPC.Goblin();
+        NPC.Imp testImp = new NPC.Imp();
+        NPC.Melon testMelon = new NPC.Melon();
         Axe testAxe = new Axe();
         Player testPlayer = new Player();
         HealthPotion testPotion = new HealthPotion();
 
 
-        System.out.println("The " + testImp.getName() + " has an attack of " + testImp.getAtk() + ". The imp HP is " + testImp.getHp());
-        System.out.println("The " + testGoblin.getName() + " has an attack of " + testGoblin.getAtk() + ". The goblin HP is " + testGoblin.getHp());
-
-        /*//do{
-            System.out.println(testGoblin.inCombat(testImp));
-
-       // }while((testGoblin.isDead() && !testImp.isDead()) || (!testGoblin.isDead() && testImp.isDead()));
-
-        System.out.println(testGoblin.inCombat(testImp));
-        System.out.println(testGoblin.inCombat(testImp));
-        System.out.println(testGoblin.inCombat(testImp));
-        System.out.println(testGoblin.inCombat(testImp));
-        System.out.println(testGoblin.inCombat(testImp));
-        System.out.println(testGoblin.inCombat(testImp));
-        System.out.println(testGoblin.inCombat(testImp));
-
-        System.out.println(testGoblin.getHp());
-        System.out.println(testImp.getHp());
-
-        if(testGoblin.isDead()){
-            System.out.println("dead");
-        }else{
-            System.out.println("notdead");
-        }
-
-        if(testImp.isDead()){
-            System.out.println("dead");
-        }else{
-            System.out.println("notdead");
-        }*/
-
-        /*testGoblin.attacks(testImp);
-        testGoblin.attacks(testImp);
-        testGoblin.attacks(testImp);
-        System.out.println(testImp.getHp());*/
-
-        while(/*!testGoblin.isDead() ^ testImp.isDead()*/NPC.eitherNPCisDead(testGoblin, testImp)) {
-            if (testGoblin.hitChance(testImp)) {
-                testGoblin.attacks(testImp);
-                System.out.println(testGoblin.getName() + " hit " + testImp.getName()  + testImp.curHP());
-            } else {
-                testImp.attacks(testGoblin);
-                System.out.println(testImp.getName() + " hit " + testGoblin.getName() + testGoblin.curHP());
-            }
-
-            System.out.println(testGoblin.getHp());
-            System.out.println(testImp.getHp());
-        }
-
-        System.out.println(testPlayer.getName());
-        testPlayer.setName("joe");
-        System.out.println(testPlayer.getName());
-
-
         testPlayer.setrHandAtk(testAxe.getDmg() + testPlayer.getAtk());
-        testPlayer.setRhand(testAxe.getName());
-        testPlayer.setDexAdj(testAxe.getSizeDexAdj());
-        System.out.println(testPlayer.toString());
 
-        testGoblin.setHp(20);
+        //Map<String, ArrayList<Integer>> rooms = new HashMap<>();
 
-        while(NPC.eitherNPCisDead(testPlayer, testGoblin)){
-            if(testPlayer.hitChance(testGoblin)){
-                testPlayer.attacks(testGoblin);
-                System.out.println(testPlayer.getName() + " hit " + testGoblin.getName()  + testGoblin.curHP());
-            }else{
-                testGoblin.attacks(testPlayer);
-                System.out.println(testGoblin.getName() + " hit " + testPlayer.getName() + testPlayer.curHP());
-            }
+        //currRoom.Look();
+
+        //genRooms();
+
+
+        Cafe testCafe = new Cafe();
+        Library testLibrary = new Library();
+
+        Rooms outside = new Rooms("outside", "grass n junk");
+
+        outside.addAdjRoom(Direction.NORTH, testCafe);
+        testCafe.addAdjRoom(Direction.EAST, testLibrary);
+
+        System.out.println(outside.go(Direction.NORTH).Look() + " " + outside.Look());
+
+        Rooms currRoom = outside;
+
+        currRoom.go(Direction.NORTH);
+        System.out.println(currRoom.Look());
+
+        testPlayer.setLocation(outside);
+
+        System.out.println(testPlayer.getLocation().Look());
+        testPlayer.setLocation(outside.go(Direction.NORTH));
+        System.out.println(testPlayer.getLocation().Look());
+
+        testLibrary.setMobInRoom(testMelon);
+
+        testPlayer.setLocation((testPlayer.getLocation()).go(Direction.EAST));
+        System.out.println(testPlayer.getLocation().Look());
+
+
+        if (testLibrary.doesExist(testGoblin)) {
+            testPlayer.attacks(testGoblin);
+            System.out.println(testGoblin.getHp());
+        } else {
+            System.out.println(testGoblin.getHp());
+            System.out.println("Mob not found");
         }
 
-        //testPlayer.setHp(testPlayer.getHp() + testPotion.getRestore());
-        //restore(testPlayer);
-        System.out.println(testPlayer.getHp());
-        testPotion.restoreHP(testPlayer);
-        System.out.println(testPlayer.getHp());
-       
+        if (testLibrary.doesExist(testMelon)) {
+            testPlayer.attacks(testMelon);
+            System.out.println(testMelon.getHp());
+            System.out.println("You atk melon");
+        } else {
+            System.out.println(testGoblin.getHp());
+            System.out.println("Mob not found");
+        }
+
+        List<NPC> monsterList = new ArrayList<NPC>();
+        monsterList.add(testGoblin);
+        monsterList.add(testImp);
+        monsterList.add(testMelon);
+
+
+        HashMap<String, UI> actions = new HashMap<>();
+        actions.put("attack", new Attack(testGoblin, testImp, testMelon, testPlayer));
+        actions.put("melon", new Melon());
+        actions.put("use", new Heal(testPlayer, testPotion));
+        actions.put("attack2", new Attack2(testPlayer, monsterList));
+
+
+        String testAction;
+        String verb = " ";
+        String noun = " ";
+        String verbnoun;
+
+
+        Scanner input = new Scanner(System.in);
+        System.out.println("What do");
+
+        verbnoun = input.nextLine();
+
+        Scanner tokenizer = new Scanner(verbnoun);
+        if (tokenizer.hasNext()) {
+            verb = tokenizer.next();
+            if (tokenizer.hasNext()) {
+                noun = tokenizer.next();
+            } else {
+                noun = verb;
+            }
+        }
+        testAction = verb + " " + noun;
+        Scanner testScan = new Scanner(testAction);
+        actions.get(testScan.next()).run(testScan);
+
+        while(true){
+            if(noun.contains("goblin") || noun.contains("imp") || noun.contains("melon")){
+                break;
+            }else{
+                System.out.println("monster wasn't found");
+                Scanner inputFix =  new Scanner(System.in);
+                verbnoun = inputFix.nextLine();
+                Scanner tokenizerFix = new Scanner(verbnoun);
+                if (tokenizerFix.hasNext()) {
+                    verb = tokenizerFix.next();
+                    if (tokenizerFix.hasNext()) {
+                        noun = tokenizerFix.next();
+                    } else {
+                        noun = verb;
+                    }
+                }
+                testAction = verb + " " + noun;
+                Scanner testScanFix = new Scanner(testAction);
+                actions.get(testScanFix.next()).run(testScanFix);
+            }
+        }
 
     }
 
-    /*public void restore(NPC object){
-        if(testPotion.getAmount() > 0){
-            testPlayer.setHp(testPlayer.getHp() + testPotion.getRestore());
-            testPotion.setAmount(-1);
-            //return "Player hp is now " + testPlayer.getHp();
-        }else{
-            //return "no potions to use";
-        }
-    }*/
+
 
 }
