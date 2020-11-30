@@ -7,7 +7,7 @@ interface UI {
     void run(Scanner args);
 }
 
-class Attack implements UI {
+/*class Attack implements UI {
     private NPC.Goblin goblin;
     private NPC.Imp imp;
     private NPC.Melon melon;
@@ -45,7 +45,7 @@ class Attack implements UI {
     }
 
 
-}
+}*/
 
 class Attack2 implements UI {
 
@@ -62,35 +62,71 @@ class Attack2 implements UI {
         this.monsterList = monsterList;
         this.player = player;
 
+
     }
+
+    public  NPC findMonster(String noun){
+        Game.noun = noun;
+        for (NPC npc :monsterList) {
+            if(npc.getName().equals(noun))
+                return npc;
+        }
+        return null;
+    }
+
+
+
 
     @Override
     public void run(Scanner args) {
-        //System.out.println(monsterList.get(0));
 
-        if (args.hasNext("goblin")) {
-            System.out.println("attacking goblin");
-            player.attacks(monsterList.get(0));
-            System.out.println(player.toDMG(monsterList.get(0)));
-
-        } else if (args.hasNext("imp")) {
-            System.out.println("attacking imp");
-            player.attacks(monsterList.get(1));
-            System.out.println(player.toDMG(monsterList.get(1)));
-
-        } else if (args.hasNext("melon")) {
-            System.out.println("attacking melon");
-            player.attacks(monsterList.get(2));
-            System.out.println(player.toDMG(monsterList.get(2)));
-
-        } else {
-            System.out.println("who");
+        NPC target = findMonster(args.next());
+        if(target != null){
+            while(NPC.eitherNPCisDead(monsterList.get(Game.i), player)){
+                if(player.hitChance(monsterList.get(Game.i))){
+                    player.attacks(monsterList.get(Game.i));
+                    System.out.println(player.toDMG(monsterList.get(Game.i)));
+                }else{
+                    monsterList.get(Game.i).attacks(player);
+                    System.out.println(monsterList.get(Game.i).toDMG(player));
+                }
+            }
 
         }
 
     }
 
 
+}
+
+class Equip implements  UI{
+    public Player player;
+    List<Weapons> weaponsList;
+
+    public Equip(){
+        weaponsList = new ArrayList<>();
+    }
+
+    public Equip(Player player, List<Weapons> weaponsList){
+        this.player = player;
+        this.weaponsList = weaponsList;
+    }
+
+    @Override
+    public void run(Scanner args) {
+        if(args.next().equals(weaponsList.get(Game.j).getName()) ){
+            player.setDexAdj(weaponsList.get(Game.j).getSizeDexAdj());
+            player.setrHandBlk(weaponsList.get(Game.j).getBlock());
+            player.setrHandAtk(weaponsList.get(Game.j).getDmg() + player.getAtk());
+            player.setRhand(weaponsList.get(Game.j).getName());
+            System.out.println(player.toString());
+
+        }else{
+            System.out.println("you don't have that weapon");
+            System.out.println("ava weapons are " + weaponsList.toString());
+        }
+
+    }
 }
 
 
@@ -100,9 +136,9 @@ class Melon implements UI {
         //if (!args.hasNext())
         //  throw new IllegalArgumentException("What?");
         if (args.hasNext("melon"))
-            System.out.println("test");
+            System.out.println("honeydew");
         else
-            System.out.println("wut");
+            System.out.println("honeydew");
     }
 }
 
