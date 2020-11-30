@@ -1,96 +1,112 @@
-
 import java.util.*;
 
-public class Game {
-    // Player testPlayer = new Player();
+public class Game{
+    public  NPC.Goblin goblin;
+    public  Player player;
+    public   NPC.Imp imp;
+    public  NPC.Melon  mel;
+
+
+    public  Axe axe = new Axe();
+    public  Bow bow = new Bow();
+    public  Gun gun = new Gun();
+    public   Sword sword = new Sword();
+
+    public   HealthPotion potion;
+    
+    public  Rooms library = new Library();
+    public  Rooms cafe = new Cafe();
+
+    Scanner input = new Scanner(System.in);
+    static String testAction;
+    static String verb;
+    static String noun;
+    public static String verbnoun;
+
+    public static HashMap<String, UI> actions = new HashMap<>();
+    public static ArrayList<NPC> monsterList = new ArrayList<NPC>();
+    public static ArrayList<Weapons> weaponsList =  new ArrayList<Weapons>();
+
+    public Game(){
+
+        player =  new Player();
+        player.setrHandAtk(axe.getDmg() + player.getAtk());
+        genCMDList();
+        genRooms();
+
+        runActions(input);
+
+
+    }
 
     public static void main(String[] args) {
+        Game game = new Game();
 
-        NPC.Goblin testGoblin = new NPC.Goblin();
-        NPC.Imp testImp = new NPC.Imp();
-        NPC.Melon testMelon = new NPC.Melon();
-        Axe testAxe = new Axe();
-        Player testPlayer = new Player();
-        HealthPotion testPotion = new HealthPotion();
+    }
 
+    public  void genCMDList(){
+        goblin = new NPC.Goblin();
+        imp = new NPC.Imp();
+        mel = new NPC.Melon();
 
-        testPlayer.setrHandAtk(testAxe.getDmg() + testPlayer.getAtk());
-
-        //Map<String, ArrayList<Integer>> rooms = new HashMap<>();
-
-        //currRoom.Look();
-
-        //genRooms();
+        monsterList.add(goblin);
+        monsterList.add(imp);
+        monsterList.add(mel);
 
 
-        Cafe testCafe = new Cafe();
-        Library testLibrary = new Library();
-
-        Rooms outside = new Rooms("outside", "grass n junk");
-
-        outside.addAdjRoom(Direction.NORTH, testCafe);
-        testCafe.addAdjRoom(Direction.EAST, testLibrary);
-
-        System.out.println(outside.go(Direction.NORTH).Look() + " " + outside.Look());
-
-        Rooms currRoom = outside;
-
-        currRoom.go(Direction.NORTH);
-        System.out.println(currRoom.Look());
-
-        testPlayer.setLocation(outside);
-
-        System.out.println(testPlayer.getLocation().Look());
-        testPlayer.setLocation(outside.go(Direction.NORTH));
-        System.out.println(testPlayer.getLocation().Look());
-
-        testLibrary.setMobInRoom(testMelon);
-
-        testPlayer.setLocation((testPlayer.getLocation()).go(Direction.EAST));
-        System.out.println(testPlayer.getLocation().Look());
+        weaponsList.add(axe);
+        weaponsList.add(bow);
+        weaponsList.add(gun);
+        weaponsList.add(sword);
 
 
-        if (testLibrary.doesExist(testGoblin)) {
-            testPlayer.attacks(testGoblin);
-            System.out.println(testGoblin.getHp());
-        } else {
-            System.out.println(testGoblin.getHp());
-            System.out.println("Mob not found");
-        }
-
-        if (testLibrary.doesExist(testMelon)) {
-            testPlayer.attacks(testMelon);
-            System.out.println(testMelon.getHp());
-            System.out.println("You atk melon");
-        } else {
-            System.out.println(testGoblin.getHp());
-            System.out.println("Mob not found");
-        }
-
-        List<NPC> monsterList = new ArrayList<NPC>();
-        monsterList.add(testGoblin);
-        monsterList.add(testImp);
-        monsterList.add(testMelon);
-
-
-        HashMap<String, UI> actions = new HashMap<>();
-        actions.put("attack", new Attack(testGoblin, testImp, testMelon, testPlayer));
         actions.put("melon", new Melon());
-        actions.put("use", new Heal(testPlayer, testPotion));
-        actions.put("attack2", new Attack2(testPlayer, monsterList));
+        actions.put("use", new Heal(player, potion));
+        actions.put("attack", new Attack2(player, monsterList));
+        actions.put("equip", new Equip(player, weaponsList));
+
+    }
+
+    public  void genRooms(){
+       Rooms outside =  new Rooms("outside ", "grass n junk");
+
+       cafe =  new Cafe();
+       library = new Library();
+
+       outside.addAdjRoom(Direction.NORTH, cafe);
+       cafe.addAdjRoom(Direction.EAST, library);
+
+       library.setMobInRoom(goblin);
+       cafe.setMobInRoom(mel);
+
+       player.setLocation(outside);
+
+    }
+
+    static int i = 0;
+    static int j = 0;
+    public  NPC findMonster(String noun){
+        Game.noun = noun;
+        for (i = 0; i<monsterList.size(); i++) {
+            if(monsterList.get(i).getName().equals(noun))
+                return monsterList.get(i);
+        }
+        return null;
+    }
+
+    public  Weapons findWeapons(String noun){
+        Game.noun = noun;
+        for (j= 0; j<weaponsList.size(); j++) {
+            if(weaponsList.get(j).getName().equals(noun))
+                return weaponsList.get(j);
+        }
+        return null;
+    }
+    public void runActions(Scanner input){
 
 
-        String testAction;
-        String verb = " ";
-        String noun = " ";
-        String verbnoun;
-
-
-        Scanner input = new Scanner(System.in);
-        System.out.println("What do");
-
+        System.out.print("> ");
         verbnoun = input.nextLine();
-
         Scanner tokenizer = new Scanner(verbnoun);
         if (tokenizer.hasNext()) {
             verb = tokenizer.next();
@@ -104,11 +120,17 @@ public class Game {
         Scanner testScan = new Scanner(testAction);
         actions.get(testScan.next()).run(testScan);
 
+
+
+
+        NPC target = findMonster(noun);
+        Weapons target2 = findWeapons(noun);
+
         while(true){
-            if(noun.contains("goblin") || noun.contains("imp") || noun.contains("melon")){
+            if(target != null ){
                 break;
             }else{
-                System.out.println("monster wasn't found");
+                System.out.print("monster wasn't found \n>");
                 Scanner inputFix =  new Scanner(System.in);
                 verbnoun = inputFix.nextLine();
                 Scanner tokenizerFix = new Scanner(verbnoun);
